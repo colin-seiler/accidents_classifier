@@ -9,7 +9,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Python deps
-COPY requirements.txt .
+COPY streamlit/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # ⬇️ COPY THE WHOLE src TREE (same idea as API)
