@@ -12,11 +12,13 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy Streamlit app code
-COPY . /app/src/streamlit
+# ⬇️ COPY THE WHOLE src TREE (same idea as API)
+COPY .. /app/src
 
-# Ensure data dir exists (mounted)
+# Data directory (mounted)
 RUN mkdir -p /app/data
+
+ENV PYTHONPATH=/app
 
 EXPOSE 8501
 

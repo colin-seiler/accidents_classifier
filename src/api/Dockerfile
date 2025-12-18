@@ -1,9 +1,8 @@
-# src/api/Dockerfile
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# System deps (LightGBM + healthcheck)
+# System deps
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libgomp1 curl && \
     rm -rf /var/lib/apt/lists/*
@@ -12,11 +11,14 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy API code
-COPY . /app/src/api
+# Copy ENTIRE src tree
+COPY src /app/src
 
-# Ensure models dir exists (mounted)
+# Ensure models dir exists
 RUN mkdir -p /app/models
+
+# Make src importable
+ENV PYTHONPATH=/app
 
 EXPOSE 8000
 

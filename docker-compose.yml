@@ -3,8 +3,8 @@ version: "3.9"
 services:
   api:
     build:
-      context: ./src/api
-      dockerfile: Dockerfile
+      context: ./src
+      dockerfile: api/Dockerfile
     container_name: accident-api
     expose:
       - "8000"
@@ -21,22 +21,21 @@ services:
 
   streamlit:
     build:
-      context: ./src/streamlit
-      dockerfile: Dockerfile
+      context: ./src
+      dockerfile: streamlit/Dockerfile
     container_name: accident-streamlit
     ports:
       - "8501:8501"
     volumes:
-      # Schema for UI generation
       - ./data:/app/data:ro
     environment:
-      # IMPORTANT: internal Docker DNS name
       - API_URL=http://api:8000
       - PYTHONUNBUFFERED=1
-    depends_on:
-      - api
     networks:
-      - accident-network
+      - housing-network
+    depends_on:
+      api:
+        condition: service_healthy
     restart: unless-stopped
 
 networks:
