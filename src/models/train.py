@@ -27,6 +27,9 @@ MODELS_ROOT = PROJECT_ROOT / "models"
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 def train(df, pca=False, tune=False):
+    if mlflow.active_run() is not None:
+        mlflow.end_run()
+
     preprocessing = build_preprocessing(50)
     set_mlflow(MLFLOW_TRACKING_URI, 'accident_prediction_model')
 
@@ -49,12 +52,10 @@ def train(df, pca=False, tune=False):
     for name in MODELS:
         print(f'🏋️‍♂️ Training Model: {name} with pca={pca} and tune={tune}')
         if pca:
-            run_name=f"{name}_pca"
             est = make_estimator_for_name(name, 4)
             models[name] = make_pipeline(clone(preprocessing), PCA(n_components=0.95), est)
 
             if tune:
-                run_name=f"{name}_pca_optuna"
                 study = optuna.create_study(
                     direction="maximize",
                     sampler=TPESampler(seed=42),
@@ -70,12 +71,10 @@ def train(df, pca=False, tune=False):
 
                 models[name].set_params(**best_params)
         else:
-            run_name = f'{name}_baseline_optuna'
             est = make_estimator_for_name(name, 4)
             models[name] = make_pipeline(clone(preprocessing), est)
 
             if tune:
-                run_name = f'{name}_baseline_optuna'
                 study = optuna.create_study(
                     direction="maximize",
                     sampler=TPESampler(seed=42),
@@ -92,14 +91,27 @@ def train(df, pca=False, tune=False):
                 models[name].set_params(**best_params)
 
     results = {}
+    if pca:
+        run = f'_pca_optuna'
+        if tune:
+            run = f'_pca_optuna'
+    else:
+        run = f'_baseline'
+        if tune:
+            run = f'_baseline_optuna'
+
     for name, pipeline in models.items():
+        run_name = name+run
+        if mlflow.active_run() is not None:
+            mlflow.end_run()
+
         results[name] = train_eval(pipeline, *split)
         if pca:
-            with mlflow.start_run(run_name):
+            with mlflow.start_run(run_name=run_name, nested=True):
                 signature = infer_signature(X_train, pipeline.predict(X_train))
                 log_mlflow_helper(name, results[name], True, signature, X_train)
         else:
-            with mlflow.start_run(run_name):
+            with mlflow.start_run(run_name=run_name, nested=True):
                 signature = infer_signature(X_train, pipeline.predict(X_train))
                 log_mlflow_helper(name, results[name], False, signature, X_train)
 

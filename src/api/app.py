@@ -1,9 +1,3 @@
-# api/app.py
-"""
-FastAPI service for housing price prediction.
-Loads the trained model and exposes a /predict endpoint.
-"""
-
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -12,30 +6,26 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# Import shared pipeline components so unpickling works
-from housing_pipeline import (
+from src.utils.pipelines import (
     ClusterSimilarity,
-    column_ratio,
-    ratio_name,
     build_preprocessing,
     make_estimator_for_name,
 )
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message="X does not have valid feature names"
+)
 
-# -----------------------------------------------------------------------------
-# Configuration
-# -----------------------------------------------------------------------------
-MODEL_PATH = Path("/app/models/global_best_model_optuna.pkl")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MODEL_PATH = PROJECT_ROOT / "models" / "global_best_model_optuna.pkl"
 
 app = FastAPI(
-    title="Housing Price Prediction API",
-    description="FastAPI service for predicting California housing prices",
+    title="Accident Severity Prediction API",
+    description="FastAPI service for predicting severity of accidents",
     version="1.0.0",
 )
 
-
-# -----------------------------------------------------------------------------
-# Load model at startup
-# -----------------------------------------------------------------------------
 def load_model(path: Path):
     """Load the trained model from disk."""
     if not path.exists():
@@ -58,9 +48,6 @@ except Exception as e:
     raise RuntimeError(f"Failed to load model: {e}")
 
 
-# -----------------------------------------------------------------------------
-# Request / Response Schemas
-# -----------------------------------------------------------------------------
 class PredictRequest(BaseModel):
     """
     Prediction request with list of instances (dicts of features).
@@ -72,15 +59,28 @@ class PredictRequest(BaseModel):
             "example": {
                 "instances": [
                     {
-                        "longitude": -122.23,
-                        "latitude": 37.88,
-                        "housing_median_age": 41.0,
-                        "total_rooms": 880.0,
-                        "total_bedrooms": 129.0,
-                        "population": 322.0,
-                        "households": 126.0,
-                        "median_income": 8.3252,
-                        "ocean_proximity": "NEAR BAY",
+                        "hour": 22,
+                        "month": 1,
+                        "is_weekend": 0,
+                        "is_night": 1,
+
+                        "state": "CA",
+                        "latitude": 34.05,
+                        "longitude": -118.24,
+
+                        "temperature_f": 55.0,
+                        "visibility_mi": 10.0,
+                        "wind_speed_mph": 5.0,
+                        "precipitation_in": 0.0,
+                        "weather_condition": "Clear",
+
+                        "junction": 0,
+                        "traffic_signal": 1,
+                        "crossing": 0,
+                        "stop": 0,
+                        "railway": 0,
+                        "roundabout": 0,
+                        "bump": 0
                     }
                 ]
             }
@@ -100,13 +100,10 @@ class PredictResponse(BaseModel):
         }
 
 
-# -----------------------------------------------------------------------------
-# Routes
-# -----------------------------------------------------------------------------
 @app.get("/")
 def root():
     return {
-        "name": "Housing Price Prediction API",
+        "name": "Accident Severity Prediction API",
         "version": "1.0.0",
         "endpoints": {
             "health": "/health",
@@ -117,7 +114,7 @@ def root():
 
 
 @app.get("/health")
-def health() -> Dict[str, str]:
+def health():
     return {
         "status": "healthy",
         "model_loaded": str(model is not None),
@@ -130,7 +127,7 @@ def predict(request: PredictRequest):
     if not request.instances:
         raise HTTPException(
             status_code=400,
-            detail="No instances provided. Please provide at least one instance.",
+            detail="No instances provided.",
         )
 
     try:
@@ -138,38 +135,22 @@ def predict(request: PredictRequest):
     except Exception as e:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid input format. Could not convert to DataFrame: {e}",
+            detail=f"Invalid input format: {e}",
         )
-
-    required_columns = [
-        "longitude",
-        "latitude",
-        "housing_median_age",
-        "total_rooms",
-        "total_bedrooms",
-        "population",
-        "households",
-        "median_income",
-        "ocean_proximity",
-    ]
-    missing = set(required_columns) - set(X.columns)
-    if missing:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Missing required columns: {sorted(missing)}",
-        )
-
     try:
         preds = model.predict(X)
+        probs = model.predict_proba(X)
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Model prediction failed: {e}",
+            detail=f"Prediction failed: {e}",
         )
 
-    preds_list = [float(p) for p in preds]
-
-    return PredictResponse(predictions=preds_list, count=len(preds_list))
+    return {
+        "predictions": preds.tolist(),
+        "probabilities": probs.tolist(),
+        "count": len(preds),
+    }
 
 
 @app.on_event("startup")

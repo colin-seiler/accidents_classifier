@@ -6,23 +6,29 @@ from typing import Any, Dict
 import requests
 import streamlit as st
 
-# -----------------------------------------------------------------------------
-# MUST be the first Streamlit command
-# -----------------------------------------------------------------------------
-st.set_page_config(page_title="Housing Prediction", page_icon="🏠", layout="centered")
+st.set_page_config(page_title="Accident Severity Prediction", page_icon="🏎️", layout="centered")
 
-# -----------------------------------------------------------------------------
-# Config
-# -----------------------------------------------------------------------------
-SCHEMA_PATH = Path("/app/data/data_schema.json")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SCHEMA_PATH = PROJECT_ROOT / "data" / "accident_schema.json"
 
 # API_URL is set in docker-compose environment
 API_BASE_URL = os.getenv("API_URL", "http://localhost:8000")
 PREDICT_ENDPOINT = f"{API_BASE_URL}/predict"
 
-# -----------------------------------------------------------------------------
-# Load schema from JSON file
-# -----------------------------------------------------------------------------
+ROAD_FEATURES = [
+    "junction",
+    "traffic_signal",
+    "crossing",
+    "stop",
+    "railway",
+    "roundabout",
+    "bump",
+]
+DAYS = {
+    0: "Sunday", 1: "Monday", 2: "Tuesday",
+    3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday"
+}
+
 @st.cache_resource
 def load_schema(path: Path) -> Dict[str, Any]:
     if not path.exists():
@@ -36,10 +42,8 @@ schema = load_schema(SCHEMA_PATH)
 numerical_features = schema.get("numerical", {})
 categorical_features = schema.get("categorical", {})
 
-# -----------------------------------------------------------------------------
 # Streamlit UI
-# -----------------------------------------------------------------------------
-st.title("🏠 Housing Prediction App")
+st.title("🏎️ Accident Severity Prediction App")
 st.write(
     f"This app sends your inputs to the FastAPI backend at **{API_BASE_URL}** for prediction."
 )
@@ -48,21 +52,27 @@ st.header("Input Features")
 
 user_input: Dict[str, Any] = {}
 
-# -----------------------------------------------------------------------------
 # Numerical Features
-# -----------------------------------------------------------------------------
-st.subheader("Numerical Features")
+st.subheader("📅 Time/Location Features")
+
+day_label = st.selectbox(
+    "Day of Week",
+    options=list(DAYS.keys()),
+    format_func=lambda x: DAYS[x],
+    index=3  # default Wednesday
+)
+
+user_input["day"] = int(day_label)
 
 # Decide which features use sliders
-SLIDER_FEATURES = {"longitude", "latitude", "housing_median_age", "median_income"}
+SLIDER_FEATURES = {"longitude", "latitude", "temperature_f", "visibility_mi", "wind_speed_mph", "precipitation_in", "hour", "month"}
 
 for feature_name, stats in numerical_features.items():
-    min_val = float(stats.get("min", 0.0))
-    max_val = float(stats.get("max", 1000.0))
+    min_val = float(stats.get("min"))
+    max_val = float(stats.get("max"))
     mean_val = float(stats.get("mean", (min_val + max_val) / 2))
     median_val = float(stats.get("median", mean_val))
 
-    # Use median as default
     default_val = median_val
 
     label = feature_name.replace("_", " ").title()
@@ -73,15 +83,24 @@ for feature_name, stats in numerical_features.items():
 
     if feature_name in SLIDER_FEATURES:
         # Determine step size based on range and semantics
-        if feature_name in {"housing_median_age"}:
+        if feature_name in {"hour", "month"}:
             step = 1.0  # age in years, int-like
-        elif feature_name in {"median_income"}:
-            step = 0.1  # more granular
+            user_input[feature_name] = st.slider(
+                label,
+                min_value=int(min_val),
+                max_value=int(max_val),
+                value=int(default_val),
+                step=1,
+                help=help_text,
+                key=feature_name,
+            )
         else:
-            # generic heuristic for latitude/longitude
-            step = 0.01
-
-        user_input[feature_name] = st.slider(
+            if feature_name in {"temperature_f", "visibility_mi", "wind_speed_mph", "precipitation_in"}:
+                step = 0.1  # more granular
+            else:
+                # generic heuristic for latitude/longitude
+                step = 0.01
+            user_input[feature_name] = st.slider(
             label,
             min_value=min_val,
             max_value=max_val,
@@ -90,8 +109,8 @@ for feature_name, stats in numerical_features.items():
             help=help_text,
             key=feature_name,
         )
+
     else:
-        # Fallback to number_input for wide-range features
         range_val = max_val - min_val
         if range_val > 10000:
             step = 10.0
@@ -113,13 +132,12 @@ for feature_name, stats in numerical_features.items():
             help=help_text,
             key=feature_name,
         )
-# -----------------------------------------------------------------------------
+
 # Categorical Features
-# -----------------------------------------------------------------------------
 st.subheader("Categorical Features")
 
 for feature_name, info in categorical_features.items():
-    unique_values = info.get("unique_values", [])
+    unique_values = sorted(info.get("unique_values", []))
     value_counts = info.get("value_counts", {})
 
     if not unique_values:
@@ -146,7 +164,25 @@ for feature_name, info in categorical_features.items():
         help=f"Distribution: {value_counts}",
     )
 
+for i, feature in enumerate(ROAD_FEATURES):
+        user_input[feature] = int(
+            st.checkbox(
+                feature.replace("_", " ").title(),
+                value=False,
+                help=f"Whether the accident location includes a {feature.replace('_', ' ')}"
+            )
+        )
+
 st.markdown("---")
+
+hour = int(user_input["hour"])
+month = int(user_input["month"])
+
+user_input["day"] = 3
+
+user_input["is_weekend"] = 1 if user_input["day"] in {0, 6} else 0
+
+user_input["is_night"] = 1 if (hour >= 20 or hour <= 5) else 0
 
 # -----------------------------------------------------------------------------
 # Predict Button

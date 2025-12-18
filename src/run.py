@@ -47,10 +47,20 @@ if __name__ == "__main__":
     start_time = time.monotonic()
 
     df = load_database()
-    if args.all:
-        runs = [(False, True),(True, True)]
+    runs = []
+    if args.tune:
+        runs.append((False, True))
+        runs.append((True, True))
+    elif args.pca:
+        runs.append((False, False))
+        runs.append((True, False))
+    elif args.all:
+        runs.append((False, False))
+        runs.append((False, True))
+        runs.append((True, False))
+        runs.append((True, True))
     else:
-        runs = [(args.pca, args.tune)]
+        runs.append((False, False))
 
     all_results = {}
     for pca_flag, tune_flag in runs:
@@ -81,7 +91,12 @@ if __name__ == "__main__":
     print(f"Global best Test F1:  {global_best_f1:,.2f}")
     print(f"Uses PCA:              {uses_pca}")
 
-    save_model(global_best_pipeline, MODELS_ROOT / 'global_best_model.pkl')
+    if args.tune or args.all:
+        save_model(global_best_pipeline, MODELS_ROOT / 'global_best_model_optuna.pkl')
+    if args.pca:
+        save_model(global_best_pipeline, MODELS_ROOT / 'global_best_model_pca.pkl')
+    else:
+        save_model(global_best_pipeline, MODELS_ROOT / 'global_best_model.pkl')
 
     end_time = time.monotonic()
 
