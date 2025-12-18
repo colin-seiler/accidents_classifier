@@ -32,7 +32,7 @@ services:
       - API_URL=http://api:8000
       - PYTHONUNBUFFERED=1
     networks:
-      - housing-network
+      - accident-network
     depends_on:
       api:
         condition: service_healthy
