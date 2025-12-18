@@ -6,11 +6,6 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from src.utils.pipelines import (
-    ClusterSimilarity,
-    build_preprocessing,
-    make_estimator_for_name,
-)
 import warnings
 warnings.filterwarnings(
     "ignore",
