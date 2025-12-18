@@ -62,10 +62,8 @@ def make_estimator_for_name(name: str, n_classes: int):
     """
     if name == "logistic":
         return LogisticRegression(
-            multi_class="multinomial",
             solver="lbfgs",
             max_iter=1000,
-            n_jobs=-1,
             random_state=42
         )
     elif name == "ridge":
@@ -104,6 +102,8 @@ def make_estimator_for_name(name: str, n_classes: int):
             subsample=0.8,
             colsample_bytree=0.8,
             n_jobs=-1,
+            verbose=-1,
+            force_col_wise=True,
             random_state=42
         )
     else:

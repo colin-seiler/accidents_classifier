@@ -1,5 +1,5 @@
 from sklearn.model_selection import cross_validate
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import f1_score, balanced_accuracy_score
 
 SCORERS = {"f1": "f1_macro", "acc": "balanced_accuracy"}
 
@@ -15,8 +15,8 @@ def train_eval(pipeline, X_train, X_test, y_train, y_test, pca=False):
 
     y_pred = pipeline.predict(X_test)
 
-    test_f1 = f1_score(y_test, y_pred)
-    test_acc = accuracy_score(y_test, y_pred)
+    test_f1 = f1_score(y_test, y_pred, average='macro')
+    test_acc = balanced_accuracy_score(y_test, y_pred)
 
     return {"pipeline": pipeline,
             "test_f1": test_f1,

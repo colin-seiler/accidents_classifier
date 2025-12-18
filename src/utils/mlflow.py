@@ -1,9 +1,12 @@
 import os
 import mlflow
+from pathlib import Path
 from dotenv import load_dotenv
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
 load_dotenv(
-    dotenv_path="/content/gdrive/MyDrive/Colab Notebooks/housing_fall2025/notebooks/.env",
+    dotenv_path=PROJECT_ROOT / '.env',
     override=True
 )
 

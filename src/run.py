@@ -1,7 +1,27 @@
 import argparse
+import time
+import warnings
+import logging
 
+from src.data.build_database import PROJECT_ROOT
 from src.data.load_database import load_database
 from src.models.train import train
+from src.utils.helper import save_model
+
+warnings.filterwarnings(
+    "ignore",
+    message=".*Inferred schema contains integer column.*"
+)
+warnings.filterwarnings(
+    "ignore",
+    message="X does not have valid feature names"
+)
+logging.getLogger("mlflow").setLevel(logging.ERROR)
+logging.getLogger("mlflow.tracking").setLevel(logging.ERROR)
+logging.getLogger("mlflow.store").setLevel(logging.ERROR)
+logging.getLogger("mlflow.store.model_registry.abstract_store").setLevel(logging.ERROR)
+
+MODELS_ROOT = PROJECT_ROOT / 'models'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -24,21 +44,49 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    start_time = time.monotonic()
+
     df = load_database()
     if args.all:
-        runs = [(False, False),(False, True),(True, False),(True, True)]
+        runs = [(False, True),(True, True)]
     else:
         runs = [(args.pca, args.tune)]
 
+    all_results = {}
     for pca_flag, tune_flag in runs:
         print(
             f"\n{'='*80}\n"
-            f"Running training with pca={pca_flag}, tune={tune_flag}\n"
+            f"🏃 Starting up training...\n"
             f"{'='*80}"
         )
         
-        train(
+        all_results.update(train(
             df,
             pca=pca_flag,
             tune=tune_flag
-        )
+        ))
+
+    global_best_name = max(all_results, key=lambda k: all_results[k]["test_f1"])
+    global_best_f1 = all_results[global_best_name]["test_f1"]
+    global_best_cv_f1 = all_results[global_best_name]["cv_f1"]
+    global_best_pipeline = all_results[global_best_name]["pipeline"]
+
+    uses_pca = "_pca" in global_best_name
+
+    print("\n" + "=" * 80)
+    print("GLOBAL BEST MODEL")
+    print("=" * 80)
+    print(f"Global best model key: {global_best_name}")
+    print(f"Global best CV F1:    {global_best_cv_f1:,.2f}")
+    print(f"Global best Test F1:  {global_best_f1:,.2f}")
+    print(f"Uses PCA:              {uses_pca}")
+
+    save_model(global_best_pipeline, MODELS_ROOT / 'global_best_model.pkl')
+
+    end_time = time.monotonic()
+
+    elapsed_time = end_time - start_time
+    minutes = int(elapsed_time // 60)
+    seconds = elapsed_time % 60
+
+    print(f"Elapsed time: {minutes} minutes and {seconds:.2f} seconds")

@@ -30,7 +30,6 @@ def objective_logistic(trial, preprocessing, X_train, y_train, use_pca):
     estimator = LogisticRegression(
         C=C,
         max_iter=2000,
-        n_jobs=-1,
         random_state=42
     )
 
@@ -106,7 +105,8 @@ def objective_lightgbm(trial, preprocessing, X_train, y_train, use_pca):
             colsample_bytree=0.8,
             n_jobs=-1,
             random_state=42,
-            verbose=-1
+            verbose=-1,
+            force_col_wise=True,
         )
     
     pipeline = optional_use_pca(preprocessing, estimator, use_pca, pca_components)

@@ -13,9 +13,7 @@ from mlflow.models import infer_signature
 from optuna.samplers import TPESampler
 
 from src.data.build_database import PROJECT_ROOT
-from src.data.load_database import load_database
 from src.utils.pipelines import build_preprocessing, make_estimator_for_name
-from src.utils.helper import save_model
 from src.utils.mlflow import set_mlflow, log_mlflow_helper, MLFLOW_TRACKING_URI
 from src.models.opt import OBJ_FUNCTIONS
 from src.models.utils import train_eval
@@ -33,7 +31,7 @@ def train(df, pca=False, tune=False):
     set_mlflow(MLFLOW_TRACKING_URI, 'accident_prediction_model')
 
     X = df.drop(columns=[OUTPUT])
-    y = df[OUTPUT]
+    y = df[OUTPUT].astype(int) - 1
 
     split = train_test_split(
         X, y,
@@ -49,11 +47,14 @@ def train(df, pca=False, tune=False):
 
     models = {}
     for name in MODELS:
+        print(f'🏋️‍♂️ Training Model: {name} with pca={pca} and tune={tune}')
         if pca:
+            run_name=f"{name}_pca"
             est = make_estimator_for_name(name, 4)
             models[name] = make_pipeline(clone(preprocessing), PCA(n_components=0.95), est)
 
             if tune:
+                run_name=f"{name}_pca_optuna"
                 study = optuna.create_study(
                     direction="maximize",
                     sampler=TPESampler(seed=42),
@@ -69,10 +70,12 @@ def train(df, pca=False, tune=False):
 
                 models[name].set_params(**best_params)
         else:
+            run_name = f'{name}_baseline_optuna'
             est = make_estimator_for_name(name, 4)
             models[name] = make_pipeline(clone(preprocessing), est)
 
             if tune:
+                run_name = f'{name}_baseline_optuna'
                 study = optuna.create_study(
                     direction="maximize",
                     sampler=TPESampler(seed=42),
@@ -92,11 +95,11 @@ def train(df, pca=False, tune=False):
     for name, pipeline in models.items():
         results[name] = train_eval(pipeline, *split)
         if pca:
-            with mlflow.start_run(run_name=f"{name}_pca"):
+            with mlflow.start_run(run_name):
                 signature = infer_signature(X_train, pipeline.predict(X_train))
                 log_mlflow_helper(name, results[name], True, signature, X_train)
         else:
-            with mlflow.start_run(run_name=f"{name}_baseline"):
+            with mlflow.start_run(run_name):
                 signature = infer_signature(X_train, pipeline.predict(X_train))
                 log_mlflow_helper(name, results[name], False, signature, X_train)
 

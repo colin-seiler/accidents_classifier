@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 from pathlib import Path
-from build_database import SQL_PATH
+from src.data.build_database import SQL_PATH
 
 def load_database():
     conn = sqlite3.connect(SQL_PATH)
@@ -41,21 +41,8 @@ def load_database():
         r.stop,
         r.railway,
         r.roundabout,
-        r.bump,
-
-        m.amenity,
-        m.give_way,
-        m.no_exit,
-        m.station,
-        m.traffic_calming,
-        m.turning_loop,
-
-        (r.junction + r.traffic_signal + r.crossing + r.stop +
-        r.railway + r.roundabout + r.bump) AS major_road_feature_count,
-
-        (m.amenity + m.give_way + m.no_exit +
-        m.station + m.traffic_calming + m.turning_loop) AS minor_road_feature_count
-
+        r.bump
+        
     FROM accidents a
     JOIN locations l
     ON a.location_id = l.location_id
@@ -63,8 +50,6 @@ def load_database():
     ON a.weather_id = w.weather_id
     JOIN road_features r
     ON a.road_features_id = r.road_features_id
-    JOIN minor_road_features m
-    ON a.minor_road_features_id = m.minor_road_features_id
     WHERE a.severity IS NOT NULL;
     """
 
