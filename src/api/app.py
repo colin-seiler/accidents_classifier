@@ -138,7 +138,7 @@ def predict(request: PredictRequest):
             detail=f"Invalid input format: {e}",
         )
     try:
-        preds = model.predict(X)
+        preds = model.predict(X) + 1
         probs = model.predict_proba(X)
     except Exception as e:
         raise HTTPException(

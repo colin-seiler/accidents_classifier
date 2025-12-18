@@ -1,0 +1,422 @@
+{
+  "numerical": {
+    "hour": {
+      "min": 0.0,
+      "max": 23.0,
+      "mean": 12.43826467479042,
+      "median": 13.0
+    },
+    "month": {
+      "min": 1.0,
+      "max": 12.0,
+      "mean": 6.969351547582952,
+      "median": 7.0
+    },
+    "latitude": {
+      "min": 24.574762,
+      "max": 49.000269,
+      "mean": 35.9599122499312,
+      "median": 35.596759999999996
+    },
+    "longitude": {
+      "min": -124.48627,
+      "max": -69.404152,
+      "mean": -93.32229350440238,
+      "median": -86.428032
+    },
+    "temperature_f": {
+      "min": -35.0,
+      "max": 140.0,
+      "mean": 62.514819428168714,
+      "median": 65.0
+    },
+    "visibility_mi": {
+      "min": 0.0,
+      "max": 100.0,
+      "mean": 8.990437846741347,
+      "median": 10.0
+    },
+    "wind_speed_mph": {
+      "min": 0.0,
+      "max": 52.0,
+      "mean": 7.323529652787452,
+      "median": 7.0
+    },
+    "precipitation_in": {
+      "min": 0.0,
+      "max": 10.0,
+      "mean": 0.00692655024625294,
+      "median": 0.0
+    }
+  },
+  "categorical": {
+    "state": {
+      "unique_values": [
+        "CA",
+        "FL",
+        "TX",
+        "SC",
+        "NY",
+        "VA",
+        "NC",
+        "PA",
+        "MN",
+        "TN",
+        "LA",
+        "AZ",
+        "MI",
+        "NJ",
+        "IL",
+        "GA",
+        "OR",
+        "AL",
+        "MD",
+        "OH",
+        "MO",
+        "OK",
+        "UT",
+        "CO",
+        "WA",
+        "CT",
+        "IN",
+        "MA",
+        "MT",
+        "WI",
+        "AR",
+        "KY",
+        "KS",
+        "IA",
+        "DC",
+        "NV",
+        "WV",
+        "NE",
+        "DE",
+        "MS",
+        "ID",
+        "RI",
+        "NM",
+        "WY",
+        "NH",
+        "ND",
+        "ME",
+        "VT",
+        "SD"
+      ],
+      "value_counts": {
+        "CA": 24783,
+        "FL": 16797,
+        "TX": 8055,
+        "SC": 6814,
+        "NY": 5943,
+        "VA": 5302,
+        "NC": 5197,
+        "PA": 4953,
+        "MN": 3391,
+        "TN": 3175,
+        "LA": 2811,
+        "AZ": 2612,
+        "MI": 2598,
+        "NJ": 2383,
+        "IL": 2350,
+        "GA": 2331,
+        "OR": 2312,
+        "AL": 2007,
+        "MD": 1887,
+        "OH": 1651,
+        "MO": 1343,
+        "OK": 1241,
+        "UT": 1237,
+        "CO": 1216,
+        "WA": 1213,
+        "CT": 1180,
+        "IN": 925,
+        "MA": 852,
+        "MT": 683,
+        "WI": 536,
+        "AR": 492,
+        "KY": 434,
+        "KS": 389,
+        "IA": 374,
+        "DC": 363,
+        "NV": 332,
+        "WV": 293,
+        "NE": 263,
+        "DE": 260,
+        "MS": 245,
+        "ID": 192,
+        "RI": 188,
+        "NM": 145,
+        "WY": 94,
+        "NH": 85,
+        "ND": 75,
+        "ME": 14,
+        "VT": 9,
+        "SD": 4
+      }
+    },
+    "weather_condition": {
+      "unique_values": [
+        "Fair",
+        "Cloudy",
+        "Mostly Cloudy",
+        "Partly Cloudy",
+        "Light Rain",
+        "Light Snow",
+        "Fog",
+        "Rain",
+        "Haze",
+        "Overcast",
+        "Fair / Windy",
+        "Heavy Rain",
+        "Thunder in the Vicinity",
+        "T-Storm",
+        "Mostly Cloudy / Windy",
+        "Light Drizzle",
+        "Snow",
+        "Thunder",
+        "Cloudy / Windy",
+        "Light Rain with Thunder",
+        "Partly Cloudy / Windy",
+        "Heavy T-Storm",
+        "Wintry Mix",
+        "Smoke",
+        "Heavy Snow",
+        "Light Snow / Windy",
+        "Light Rain / Windy",
+        "Light Thunderstorms and Rain",
+        "Scattered Clouds",
+        "N/A Precipitation",
+        "Shallow Fog",
+        "Drizzle",
+        "Clear",
+        "Light Freezing Rain",
+        "Heavy Rain / Windy",
+        "Haze / Windy",
+        "Rain / Windy",
+        "Mist",
+        "Patches of Fog",
+        "Blowing Snow / Windy",
+        "Snow / Windy",
+        "Thunderstorms and Rain",
+        "Heavy T-Storm / Windy",
+        "Showers in the Vicinity",
+        "Thunderstorm",
+        "Thunder / Windy",
+        "Heavy Snow / Windy",
+        "Blowing Snow",
+        "Light Freezing Drizzle",
+        "Fog / Windy",
+        "T-Storm / Windy",
+        "Heavy Thunderstorms and Rain",
+        "Wintry Mix / Windy",
+        "Light Snow and Sleet",
+        "Light Rain Shower",
+        "Light Sleet",
+        "Snow and Sleet",
+        "Light Freezing Fog",
+        "Blowing Dust",
+        "Drizzle and Fog",
+        "Blowing Dust / Windy",
+        "Freezing Rain",
+        "Widespread Dust / Windy",
+        "Sand / Dust Whirlwinds",
+        "Light Drizzle / Windy",
+        "Heavy Drizzle",
+        "Small Hail",
+        "Light Snow Shower",
+        "Snow and Sleet / Windy",
+        "Snow and Thunder",
+        "Snow Grains",
+        "Sleet",
+        "Light Snow and Sleet / Windy",
+        "Tornado",
+        "Hail",
+        "Light Freezing Rain / Windy",
+        "Thunder and Hail",
+        "Smoke / Windy",
+        "Sleet and Thunder",
+        "Widespread Dust",
+        "Thunderstorms and Snow",
+        "Rain Shower",
+        "Light Ice Pellets"
+      ],
+      "value_counts": {
+        "Fair": 57116,
+        "Cloudy": 17101,
+        "Mostly Cloudy": 16021,
+        "Partly Cloudy": 10744,
+        "Light Rain": 6645,
+        "Light Snow": 2637,
+        "Fog": 1804,
+        "Rain": 1603,
+        "Haze": 1091,
+        "Overcast": 780,
+        "Fair / Windy": 737,
+        "Heavy Rain": 583,
+        "Thunder in the Vicinity": 430,
+        "T-Storm": 379,
+        "Mostly Cloudy / Windy": 378,
+        "Light Drizzle": 360,
+        "Snow": 356,
+        "Thunder": 345,
+        "Cloudy / Windy": 343,
+        "Light Rain with Thunder": 316,
+        "Partly Cloudy / Windy": 257,
+        "Heavy T-Storm": 254,
+        "Wintry Mix": 211,
+        "Smoke": 173,
+        "Heavy Snow": 153,
+        "Light Snow / Windy": 143,
+        "Light Rain / Windy": 128,
+        "Light Thunderstorms and Rain": 64,
+        "Scattered Clouds": 63,
+        "N/A Precipitation": 63,
+        "Shallow Fog": 58,
+        "Drizzle": 56,
+        "Clear": 47,
+        "Light Freezing Rain": 45,
+        "Heavy Rain / Windy": 41,
+        "Haze / Windy": 40,
+        "Rain / Windy": 39,
+        "Mist": 38,
+        "Patches of Fog": 36,
+        "Blowing Snow / Windy": 29,
+        "Snow / Windy": 27,
+        "Thunderstorms and Rain": 27,
+        "Heavy T-Storm / Windy": 26,
+        "Showers in the Vicinity": 26,
+        "Thunderstorm": 20,
+        "Thunder / Windy": 20,
+        "Heavy Snow / Windy": 18,
+        "Blowing Snow": 17,
+        "Light Freezing Drizzle": 17,
+        "Fog / Windy": 15,
+        "T-Storm / Windy": 14,
+        "Heavy Thunderstorms and Rain": 14,
+        "Wintry Mix / Windy": 9,
+        "Light Snow and Sleet": 9,
+        "Light Rain Shower": 8,
+        "Light Sleet": 7,
+        "Snow and Sleet": 5,
+        "Light Freezing Fog": 5,
+        "Blowing Dust": 4,
+        "Drizzle and Fog": 3,
+        "Blowing Dust / Windy": 3,
+        "Freezing Rain": 2,
+        "Widespread Dust / Windy": 2,
+        "Sand / Dust Whirlwinds": 2,
+        "Light Drizzle / Windy": 2,
+        "Heavy Drizzle": 2,
+        "Small Hail": 2,
+        "Light Snow Shower": 1,
+        "Snow and Sleet / Windy": 1,
+        "Snow and Thunder": 1,
+        "Snow Grains": 1,
+        "Sleet": 1,
+        "Light Snow and Sleet / Windy": 1,
+        "Tornado": 1,
+        "Hail": 1,
+        "Light Freezing Rain / Windy": 1,
+        "Thunder and Hail": 1,
+        "Smoke / Windy": 1,
+        "Sleet and Thunder": 1,
+        "Widespread Dust": 1,
+        "Thunderstorms and Snow": 1,
+        "Rain Shower": 1,
+        "Light Ice Pellets": 1
+      }
+    }
+  },
+  "binary": {
+    "is_weekend": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 101759,
+        "1": 20270
+      }
+    },
+    "is_night": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 97125,
+        "1": 24904
+      }
+    },
+    "junction": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 114091,
+        "1": 7938
+      }
+    },
+    "traffic_signal": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 106626,
+        "1": 15403
+      }
+    },
+    "crossing": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 108795,
+        "1": 13234
+      }
+    },
+    "stop": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 118644,
+        "1": 3385
+      }
+    },
+    "railway": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 121050,
+        "1": 979
+      }
+    },
+    "roundabout": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 122028,
+        "1": 1
+      }
+    },
+    "bump": {
+      "unique_values": [
+        0,
+        1
+      ],
+      "value_counts": {
+        "0": 121953,
+        "1": 76
+      }
+    }
+  }
+}

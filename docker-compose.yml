@@ -1,43 +1,44 @@
+version: "3.9"
 
 services:
   api:
     build:
-      context: ./api
+      context: ./src/api
       dockerfile: Dockerfile
-    container_name: housing-api
-    # Use 'expose' instead of 'ports' to keep it internal only
+    container_name: accident-api
     expose:
       - "8000"
     volumes:
-      # Mount models folder for future model loading
+      # Trained models
       - ./models:/app/models:ro
+      # Schema + database access if needed
+      - ./data:/app/data:ro
     environment:
       - PYTHONUNBUFFERED=1
     networks:
-      - housing-network
+      - accident-network
     restart: unless-stopped
 
   streamlit:
     build:
-      context: ./streamlit
+      context: ./src/streamlit
       dockerfile: Dockerfile
-    container_name: housing-streamlit
-    # Only the Streamlit app is publicly accessible
+    container_name: accident-streamlit
     ports:
       - "8501:8501"
     volumes:
-      # Mount data folder for future JSON schema loading
+      # Schema for UI generation
       - ./data:/app/data:ro
     environment:
+      # IMPORTANT: internal Docker DNS name
       - API_URL=http://api:8000
       - PYTHONUNBUFFERED=1
-    networks:
-      - housing-network
     depends_on:
-      api:
-        condition: service_healthy
+      - api
+    networks:
+      - accident-network
     restart: unless-stopped
 
 networks:
-  housing-network:
+  accident-network:
     driver: bridge

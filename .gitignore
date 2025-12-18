@@ -2,6 +2,8 @@
 .DS_Store
 .venv
 data/*
-notebooks*
+notebooks/*
 
 __pycache__
+!data/accident_schema.json
+!data/accidents.db

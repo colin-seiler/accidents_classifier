@@ -1,21 +1,21 @@
-# streamlit/Dockerfile
+# src/streamlit/Dockerfile
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# 0. Install system dependencies (curl for healthcheck)
+# System deps
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
-# 1. Install Python dependencies
+# Python deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 2. Copy Streamlit app
-COPY app.py .
+# Copy Streamlit app code
+COPY . /app/src/streamlit
 
-# 3. Ensure data dir exists (will be mounted from host)
+# Ensure data dir exists (mounted)
 RUN mkdir -p /app/data
 
 EXPOSE 8501
