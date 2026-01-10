@@ -8,7 +8,6 @@ This project demonstrates **full-stack ML engineering**, from model inference to
 
 ## Highlights
 
-- Built and deployed a **complete ML system**, not just a notebook
 - Served real-time predictions via a **REST API (FastAPI)**
 - Designed a **user-facing Streamlit app** for interactive inference
 - Fully **Dockerized & orchestrated with Docker Compose**
